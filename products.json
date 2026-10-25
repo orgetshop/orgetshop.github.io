@@ -1,1 +1,20 @@
-[]
+[
+ {
+  "id": "p1792955956137",
+  "code": "P0001",
+  "slug": "redmi-a5",
+  "name": "redmi a5",
+  "brand": "Xiaomi",
+  "category": "মোবাইল",
+  "price": 11000,
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [],
+  "inStock": true,
+  "keywords": "",
+  "added": 1792955956137,
+  "soldAt": 0
+ }
+]
