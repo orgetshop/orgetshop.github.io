@@ -14,6 +14,9 @@
     x = x || {};
     for (k in x) if (x[k] !== undefined && x[k] !== null && x[k] !== '') o[k] = x[k];
     if (!o.notice) o.notice = { text: '', image: '' };
+    var nl = Array.isArray(o.notices) ? o.notices.slice() : [];
+    if (!nl.length && (o.notice.text || o.notice.image)) nl = [o.notice];
+    o.notices = nl.filter(function (n) { return n && (n.text || n.image); }).slice(0, 5);
     return o;
   }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -64,7 +67,7 @@
   /* ---------- কার্ড ও সার্চ ---------- */
   function cardHTML(p, root) {
     var im = (p.images && p.images[0]) ? asset(root, p.images[0]) : root + 'logo.png';
-    return '<a class="card" href="' + root + 'p/' + esc(p.slug) + '.html"><div class="im"><img loading="lazy" src="' + esc(im) + '" alt="' + esc(p.name) + '"></div><div class="in"><div class="nm">' + esc(p.name) + '</div><div class="pr">' + priceText(p) + '</div>' + (p.inStock === false ? '<div class="oos">স্টক শেষ</div>' : '') + '</div></a>';
+    return '<a class="card" href="' + root + 'p/' + esc(p.slug) + '.html"><div class="im"><img loading="lazy" src="' + esc(im) + '" alt="' + esc(p.name) + '"></div><div class="in"><div class="nm">' + esc(p.name) + '</div><div class="pr">' + priceText(p) + '</div>' + (p.inStock === false ? '<div class="oos">স্টক আউট</div>' : '') + (p.sold > 0 ? '<div class="sd">' + p.sold + ' টি বিক্রি হয়েছে</div>' : '') + '</div></a>';
   }
   function tokens(q) { return String(q || '').toLowerCase().split(/[^a-z0-9ঀ-৿]+/).filter(function (t) { return t && NOISE.indexOf(t) < 0; }); }
   function matches(p, toks) {
@@ -76,54 +79,95 @@
     return fetch(path, { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : fallback; }).catch(function () { return fallback; });
   }
 
+  /* ---------- নোটিশ স্লাইডার (৫ সেকেন্ড পর পর) ---------- */
+  var NT = null;
+  function mountNotices(el, list, root) {
+    if (NT) { clearInterval(NT); NT = null; }
+    if (!list || !list.length) { el.innerHTML = ''; return; }
+    el.innerHTML = '<div class="nb"><div class="ntrack" id="ntrack">' + list.map(function (n) {
+      return '<div class="nslide">' + (n.image ? '<img src="' + esc(asset(root, n.image)) + '" alt="">' : '') + (n.text ? '<div class="nt">' + esc(n.text) + '</div>' : '') + '</div>';
+    }).join('') + '</div>' + (list.length > 1 ? '<div class="ndots">' + list.map(function (_, i) { return '<i data-i="' + i + '"></i>'; }).join('') + '</div>' : '') + '</div>';
+    var tr = el.querySelector('#ntrack'), dots = el.querySelectorAll('.ndots i'), i = 0;
+    function go(k) {
+      i = k; tr.style.transform = 'translateX(' + (-100 * i) + '%)';
+      [].forEach.call(dots, function (d, j) { d.classList.toggle('on', j === i); });
+    }
+    go(0);
+    if (list.length > 1) {
+      NT = setInterval(function () { go((i + 1) % list.length); }, 5000);
+      [].forEach.call(dots, function (d) { d.onclick = function () { clearInterval(NT); go(+d.getAttribute('data-i')); NT = setInterval(function () { go((i + 1) % list.length); }, 5000); }; });
+    }
+  }
+
+  function catHref(root, c) { return (root || './') + 'category.html?c=' + encodeURIComponent(c); }
+  function catsOf(S, P) {
+    var c = S.categories.slice();
+    P.forEach(function (p) { if (p.category && c.indexOf(p.category) < 0) c.push(p.category); });
+    return c.filter(function (x) { return P.some(function (p) { return p.category === x; }); });
+  }
+  function chipsHTML(S, P, active, root) {
+    var h = '<a class="chip' + (active ? '' : ' on') + '" href="' + (root || './') + '">সব</a>';
+    catsOf(S, P).forEach(function (c) { h += '<a class="chip' + (active === c ? ' on' : '') + '" href="' + esc(catHref(root, c)) + '">' + esc(c) + '</a>'; });
+    return h;
+  }
+  function footHTML(S) {
+    return '<p>আমাদের সাথে WhatsApp এ যোগাযোগ করুন</p><div class="row2"><a class="b wa" href="https://wa.me/' + esc(S.whatsapp) + '">WhatsApp করুন</a><a class="b call" href="tel:' + esc(S.phone) + '">কল করুন: ' + esc(S.phone) + '</a></div>';
+  }
+
   /* ---------- হোম পেজ ---------- */
   function home() {
-    var root = '', S = S_(g.__SITE), P = [], cat = '', q = '';
+    var root = '', S = S_(g.__SITE), P = [], q = '';
     captureLogin();
     mountHeader(S, root);
     var app = document.getElementById('app');
     app.innerHTML = '<div class="search"><input id="q" type="search" placeholder="পণ্য খুঁজুন… (যেমন: Redmi A5)" autocomplete="off"></div><div class="chips" id="chips"></div><div id="nt"></div><div id="list"></div><div class="foot" id="foot"></div>';
-    function cats() {
-      var c = S.categories.slice();
-      P.forEach(function (p) { if (p.category && c.indexOf(p.category) < 0) c.push(p.category); });
-      return c.filter(function (x) { return P.some(function (p) { return p.category === x; }); });
-    }
-    function renderChips() {
-      var h = '<button class="chip' + (cat ? '' : ' on') + '" data-c="">সব</button>';
-      cats().forEach(function (c) { h += '<button class="chip' + (cat === c ? ' on' : '') + '" data-c="' + esc(c) + '">' + esc(c) + '</button>'; });
-      var el = document.getElementById('chips'); el.innerHTML = h;
-      [].forEach.call(el.querySelectorAll('.chip'), function (b) {
-        b.onclick = function () { var c = b.getAttribute('data-c'); cat = (cat === c) ? '' : c; renderChips(); renderList(); };
-      });
-    }
-    function renderNotice() {
-      var n = S.notice || {}, el = document.getElementById('nt');
-      if (!n.text && !n.image) { el.innerHTML = ''; return; }
-      el.innerHTML = '<div class="notice">' + (n.image ? '<img src="' + esc(asset(root, n.image)) + '" alt="">' : '') + (n.text ? '<div class="nt">' + esc(n.text) + '</div>' : '') + '</div>';
-    }
     function renderList() {
-      var toks = tokens(q), el = document.getElementById('list');
-      var list = P.filter(function (p) { return (!toks.length || matches(p, toks)) && (!cat || p.category === cat); });
+      var toks = tokens(q), el = document.getElementById('list'), h = '';
       if (!P.length) { el.innerHTML = '<div class="empty">এখনো কোনো পণ্য যোগ করা হয়নি</div>'; return; }
-      if (!list.length) { el.innerHTML = '<div class="empty">কোনো পণ্য পাওয়া যায়নি</div>'; return; }
-      var h = '';
       if (toks.length) {
-        h = '<div class="sec"><h2>খোঁজার ফল</h2><div class="grid">' + sorted(list).map(function (p) { return cardHTML(p, root); }).join('') + '</div></div>';
+        var list = sorted(P.filter(function (p) { return matches(p, toks); }));
+        if (!list.length) { el.innerHTML = '<div class="empty">কোনো পণ্য পাওয়া যায়নি</div>'; return; }
+        h = '<div class="sec"><div class="sh"><h2>খোঁজার ফল</h2></div><div class="grid">' + list.map(function (p) { return cardHTML(p, root); }).join('') + '</div></div>';
       } else {
-        cats().forEach(function (c) {
-          var items = sorted(list.filter(function (p) { return p.category === c; }));
-          if (items.length) h += '<div class="sec"><h2>' + esc(c) + '</h2><div class="grid">' + items.map(function (p) { return cardHTML(p, root); }).join('') + '</div></div>';
+        catsOf(S, P).forEach(function (c) {
+          var items = sorted(P.filter(function (p) { return p.category === c; }));
+          h += '<div class="sec"><div class="sh"><h2>' + esc(c) + '</h2><a class="more" href="' + esc(catHref(root, c)) + '">সব দেখুন ›</a></div><div class="hrow">' + items.map(function (p) { return cardHTML(p, root); }).join('') + '</div></div>';
         });
-        var other = sorted(list.filter(function (p) { return !p.category; }));
-        if (other.length) h += '<div class="sec"><h2>অন্যান্য</h2><div class="grid">' + other.map(function (p) { return cardHTML(p, root); }).join('') + '</div></div>';
+        var other = sorted(P.filter(function (p) { return !p.category; }));
+        if (other.length) h += '<div class="sec"><div class="sh"><h2>অন্যান্য</h2></div><div class="hrow">' + other.map(function (p) { return cardHTML(p, root); }).join('') + '</div></div>';
       }
       el.innerHTML = h;
     }
-    function renderFoot() {
-      document.getElementById('foot').innerHTML = '<p>আমাদের সাথে WhatsApp এ যোগাযোগ করুন</p><div class="row"><a class="b wa" href="https://wa.me/' + esc(S.whatsapp) + '">WhatsApp করুন</a><a class="b call" href="tel:' + esc(S.phone) + '">কল করুন: ' + esc(S.phone) + '</a></div>';
-    }
     document.getElementById('q').oninput = function () { q = this.value; renderList(); };
-    function all() { mountHeader(S, root); renderChips(); renderNotice(); renderList(); renderFoot(); }
+    function all() {
+      mountHeader(S, root);
+      document.getElementById('chips').innerHTML = chipsHTML(S, P, '', root);
+      mountNotices(document.getElementById('nt'), S.notices, root);
+      renderList();
+      document.getElementById('foot').innerHTML = footHTML(S);
+    }
+    all();
+    Promise.all([loadJSON('site.json', {}), loadJSON('products.json', [])]).then(function (a) {
+      S = S_(a[0]); P = Array.isArray(a[1]) ? a[1] : []; all();
+    });
+  }
+
+  /* ---------- ক্যাটাগরির আলাদা পেজ ---------- */
+  function category() {
+    var root = '', S = S_(g.__SITE), P = [], c = '';
+    try { c = new URL(location.href).searchParams.get('c') || ''; } catch (e) { }
+    captureLogin();
+    var app = document.getElementById('app');
+    app.innerHTML = '<div class="chips" id="chips"></div><h1 id="ct"></h1><div id="list"></div><div class="foot" id="foot"></div>';
+    function all() {
+      mountHeader(S, root);
+      document.title = c + ' এর দাম ও ছবি | ' + S.name;
+      document.getElementById('chips').innerHTML = chipsHTML(S, P, c, root);
+      document.getElementById('ct').textContent = c;
+      var list = sorted(P.filter(function (p) { return p.category === c; }));
+      document.getElementById('list').innerHTML = list.length ? '<div class="grid">' + list.map(function (p) { return cardHTML(p, root); }).join('') + '</div>' : '<div class="empty">এই ক্যাটাগরিতে এখনো কোনো পণ্য নেই</div>';
+      document.getElementById('foot').innerHTML = footHTML(S);
+    }
     all();
     Promise.all([loadJSON('site.json', {}), loadJSON('products.json', [])]).then(function (a) {
       S = S_(a[0]); P = Array.isArray(a[1]) ? a[1] : []; all();
@@ -175,7 +219,8 @@
       var me = all.filter(function (x) { return x.id === p.id; })[0];
       if (me) {
         var st = document.getElementById('stock');
-        if (st) { var ok = me.inStock !== false; st.className = 'stk ' + (ok ? 'ok' : 'no'); st.textContent = ok ? 'স্টকে আছে' : 'স্টক শেষ'; }
+        if (st) { var ok = me.inStock !== false; st.className = 'stk ' + (ok ? 'ok' : 'no'); st.textContent = ok ? 'স্টকে আছে' : 'স্টক আউট'; }
+        var sd = document.getElementById('sold'); if (sd) sd.textContent = me.sold > 0 ? me.sold + ' টি বিক্রি হয়েছে' : '';
       }
       var rel = sorted(all.filter(function (x) { return x.category === p.category && x.id !== p.id; })).slice(0, 12);
       var sec = document.getElementById('relsec');
@@ -214,7 +259,7 @@
     h.push('<div class="gal" id="gal">' + imgs.map(function (x) { return '<img src="' + esc(asset('../', x)) + '" alt="' + esc(p.name) + '">'; }).join('') + '</div>');
     if (imgs.length > 1) h.push('<div class="thumbs">' + imgs.map(function (x, i) { return '<img data-th="' + i + '" src="' + esc(asset('../', x)) + '" alt="">'; }).join('') + '</div>');
     h.push('<h1>' + esc(p.name) + '</h1><div class="meta">' + (p.brand ? 'ব্র্যান্ড: ' + esc(p.brand) + ' · ' : '') + 'কোড: ' + esc(p.code || '') + '</div>');
-    h.push('<div class="price" id="price">' + fmt(first) + '</div><div class="stk ' + (inst ? 'ok' : 'no') + '" id="stock">' + (inst ? 'স্টকে আছে' : 'স্টক শেষ') + '</div>');
+    h.push('<div class="price" id="price">' + fmt(first) + '</div><div class="stk ' + (inst ? 'ok' : 'no') + '" id="stock">' + (inst ? 'স্টকে আছে' : 'স্টক আউট') + '</div><div class="sold" id="sold">' + (p.sold > 0 ? p.sold + ' টি বিক্রি হয়েছে' : '') + '</div>');
     if (p.colors && p.colors.length) h.push('<div class="lbl">কালার</div><div class="opts">' + p.colors.map(function (c) { return '<button class="opt" data-color="' + esc(c) + '">' + esc(c) + '</button>'; }).join('') + '</div>');
     if (vs.length) h.push('<div class="lbl">ভেরিয়েন্ট</div><div class="opts">' + vs.map(function (v, i) { return '<button class="opt" data-var="' + i + '">' + esc(v.label) + '<small>' + fmt(v.price) + '</small></button>'; }).join('') + '</div>');
     if (plain) h.push('<h2>বিবরণ</h2><p>' + nl2br(p.desc) + '</p>');
@@ -228,12 +273,13 @@
 
   function sitemap(products, S0) {
     var S = S_(S0), base = S.base.replace(/\/$/, ''), d = new Date().toISOString().slice(0, 10);
-    var urls = [base + '/'].concat(products.map(function (p) { return base + '/p/' + p.slug + '.html'; }));
+    var cats = []; products.forEach(function (p) { if (p.category && cats.indexOf(p.category) < 0) cats.push(p.category); });
+    var urls = [base + '/'].concat(cats.map(function (c) { return base + '/category.html?c=' + encodeURIComponent(c); }), products.map(function (p) { return base + '/p/' + p.slug + '.html'; }));
     return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
       urls.map(function (u) { return '<url><loc>' + esc(u) + '</loc><lastmod>' + d + '</lastmod></url>'; }).join('\n') + '\n</urlset>\n';
   }
 
-  var Shop = { home: home, product: product, pageHTML: pageHTML, sitemap: sitemap, site: S_, slugify: slugify, fmt: fmt, minPrice: minPrice, esc: esc };
+  var Shop = { home: home, category: category, product: product, pageHTML: pageHTML, sitemap: sitemap, site: S_, slugify: slugify, fmt: fmt, minPrice: minPrice, esc: esc };
   g.Shop = Shop;
   if (typeof module !== 'undefined' && module.exports) module.exports = Shop;
 })(typeof window !== 'undefined' ? window : globalThis);
