@@ -59,5 +59,25 @@
   "keywords": "",
   "added": 1792956984466,
   "soldAt": 0
+ },
+ {
+  "id": "p1792957852788",
+  "code": "P0004",
+  "slug": "p-p0004",
+  "name": "ইয়ারফুন",
+  "brand": "",
+  "category": "গেজেট",
+  "price": 60,
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/p-1792957848017-0.jpg"
+  ],
+  "inStock": true,
+  "keywords": "",
+  "added": 1792957852790,
+  "soldAt": 0
  }
 ]
