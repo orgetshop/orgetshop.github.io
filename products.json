@@ -16,5 +16,25 @@
   "keywords": "",
   "added": 1792955956137,
   "soldAt": 0
+ },
+ {
+  "id": "p1792956467098",
+  "code": "P0002",
+  "slug": "21w-super-fast-type-c-charger",
+  "name": "21w super fast type-c charger",
+  "brand": "Excel",
+  "category": "গেজেট",
+  "price": 420,
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/21w-super-fast-type-c-charger-1792956463404-0.jpg"
+  ],
+  "inStock": true,
+  "keywords": "Charger,  excel, x-cel, Android charger, fast chatger.",
+  "added": 1792956467098,
+  "soldAt": 0
  }
 ]
