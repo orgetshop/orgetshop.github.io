@@ -36,5 +36,28 @@
   "keywords": "Charger,  excel, x-cel, Android charger, fast chatger.",
   "added": 1792956467098,
   "soldAt": 0
+ },
+ {
+  "id": "p1792956984465",
+  "code": "P0003",
+  "slug": "mini-rice-cooker",
+  "name": "Mini Rice cooker",
+  "brand": "",
+  "category": "গেজেট",
+  "price": 750,
+  "desc": "",
+  "specs": [],
+  "colors": [
+   "হলুদ"
+  ],
+  "variants": [],
+  "images": [
+   "img/mini-rice-cooker-1792956977551-0.jpg",
+   "img/mini-rice-cooker-1792956981023-1.jpg"
+  ],
+  "inStock": true,
+  "keywords": "",
+  "added": 1792956984466,
+  "soldAt": 0
  }
 ]
