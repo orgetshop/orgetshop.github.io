@@ -79,5 +79,26 @@
   "keywords": "",
   "added": 1792957852790,
   "soldAt": 0
+ },
+ {
+  "id": "p1792973181901",
+  "code": "P0005",
+  "slug": "skb-multi-cooker",
+  "name": "SKB multi cooker",
+  "brand": "SKB",
+  "category": "ইলেকট্রনিকস",
+  "price": 5000,
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/skb-multi-cooker-1792973178233-0.jpg"
+  ],
+  "inStock": true,
+  "sold": 10,
+  "keywords": "",
+  "added": 1792973181902,
+  "soldAt": 0
  }
 ]
