@@ -917,5 +917,29 @@
   "keywords": "",
   "added": 1792991189640,
   "soldAt": 0
+ },
+ {
+  "id": "p1792995824304",
+  "code": "P0016",
+  "slug": "p-p0016",
+  "name": "কাটের খাট",
+  "brand": "",
+  "category": "ফার্নিচার",
+  "price": 25000,
+  "offer": 22000,
+  "offerEnd": "",
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/p-1792995816884-0.jpg",
+   "img/p-1792995820672-1.jpg"
+  ],
+  "inStock": true,
+  "sold": 0,
+  "keywords": "",
+  "added": 1792995824305,
+  "soldAt": 0
  }
 ]
