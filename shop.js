@@ -23,15 +23,32 @@
   function fmt(n) { return '৳ ' + Number(n || 0).toLocaleString('en-IN'); }
   function slugify(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
   function asset(root, path) { return /^https?:/.test(path) ? path : root + path; }
-  function minPrice(p) {
-    var v = (p.variants || []).map(function (x) { return +x.price; }).filter(function (x) { return x > 0; });
-    return v.length ? Math.min.apply(null, v) : (+p.price || 0);
+  /* ---------- দাম: রেগুলার ও অফার ---------- */
+  function bdToday() { return new Date(Date.now() + 6 * 3600000).toISOString().slice(0, 10); }
+  function offerOn(p) { return !p.offerEnd || bdToday() <= p.offerEnd; }
+  function pinfo(p, v) {
+    var reg = v ? +v.price : +p.price, o = v ? +v.offer : +p.offer;
+    var live = o > 0 && o < reg && offerOn(p);
+    return { reg: reg, cur: live ? o : reg, live: live, save: live ? reg - o : 0 };
   }
-  function priceText(p) {
-    var ps = (p.variants || []).map(function (x) { return +x.price; });
-    var multi = ps.length > 1 && Math.min.apply(null, ps) !== Math.max.apply(null, ps);
-    return fmt(minPrice(p)) + (multi ? ' থেকে' : '');
+  function minInfo(p) {
+    var vs = (p.variants || []).filter(function (x) { return +x.price > 0; });
+    if (!vs.length) { var i0 = pinfo(p, null); i0.multi = false; return i0; }
+    var best = null, curs = [];
+    vs.forEach(function (v) { var i = pinfo(p, v); curs.push(i.cur); if (!best || i.cur < best.cur) best = i; });
+    best.multi = Math.min.apply(null, curs) !== Math.max.apply(null, curs);
+    return best;
   }
+  function minPrice(p) { return minInfo(p).cur; }
+  function priceBlock(p) {
+    var i = minInfo(p);
+    return '<div class="pr">' + fmt(i.cur) + (i.multi ? ' থেকে' : '') + '</div>' + (i.live ? '<div class="rg"><s>' + fmt(i.reg) + '</s> <span class="sv">' + fmt(i.save) + ' বাঁচল</span></div>' : '');
+  }
+  function dateBn(d) { try { return new Date(d + 'T00:00:00+06:00').toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Dhaka' }); } catch (e) { return d; } }
+  function rgHTML(inf, p) {
+    return inf.live ? '<s>' + fmt(inf.reg) + '</s> <span class="sv">' + fmt(inf.save) + ' বাঁচল</span>' + (p.offerEnd ? '<div class="oend">অফার শেষ: ' + esc(dateBn(p.offerEnd)) + '</div>' : '') : '';
+  }
+  function varSmall(i) { return fmt(i.cur) + (i.live ? ' <s>' + fmt(i.reg) + '</s>' : ''); }
   function nl2br(s) { return esc(s).replace(/\n/g, '<br>'); }
   function jsonForScript(o) { return JSON.stringify(o).replace(/</g, '\\u003c').split('\u2028').join('\\u2028').split('\u2029').join('\\u2029'); }
 
@@ -67,7 +84,7 @@
   /* ---------- কার্ড ও সার্চ ---------- */
   function cardHTML(p, root) {
     var im = (p.images && p.images[0]) ? asset(root, p.images[0]) : root + 'logo.png';
-    return '<a class="card" href="' + root + 'p/' + esc(p.slug) + '.html"><div class="im"><img loading="lazy" src="' + esc(im) + '" alt="' + esc(p.name) + '"></div><div class="in"><div class="nm">' + esc(p.name) + '</div><div class="pr">' + priceText(p) + '</div>' + (p.inStock === false ? '<div class="oos">স্টক আউট</div>' : '') + (p.sold > 0 ? '<div class="sd">' + p.sold + ' টি বিক্রি হয়েছে</div>' : '') + '</div></a>';
+    return '<a class="card" href="' + root + 'p/' + esc(p.slug) + '.html"><div class="im"><img loading="lazy" src="' + esc(im) + '" alt="' + esc(p.name) + '"></div><div class="in"><div class="nm">' + esc(p.name) + '</div>' + priceBlock(p) + (p.inStock === false ? '<div class="oos">স্টক আউট</div>' : '') + (p.sold > 0 ? '<div class="sd">' + p.sold + ' টি বিক্রি হয়েছে</div>' : '') + '</div></a>';
   }
   function tokens(q) { return String(q || '').toLowerCase().split(/[^a-z0-9ঀ-৿]+/).filter(function (t) { return t && NOISE.indexOf(t) < 0; }); }
   function matches(p, toks) {
@@ -114,31 +131,45 @@
     return '<p>আমাদের সাথে WhatsApp এ যোগাযোগ করুন</p><div class="row2"><a class="b wa" href="https://wa.me/' + esc(S.whatsapp) + '">WhatsApp করুন</a><a class="b call" href="tel:' + esc(S.phone) + '">কল করুন: ' + esc(S.phone) + '</a></div>';
   }
 
+  /* ---------- স্টকে আছে / স্টকে নেই বাটন ---------- */
+  function stkBar() { return '<div class="stkbar"><button class="stkb" data-s="in">স্টকে আছে</button><button class="stkb" data-s="out">স্টকে নেই</button></div>'; }
+  function stkOk(stk, p) { return !stk || ((stk === 'in') === (p.inStock !== false)); }
+  function bindStk(get, set, rerender) {
+    function paint() { [].forEach.call(document.querySelectorAll('.stkb'), function (x) { x.classList.toggle('on', get() === x.getAttribute('data-s')); }); }
+    [].forEach.call(document.querySelectorAll('.stkb'), function (b) {
+      b.onclick = function () { var v = b.getAttribute('data-s'); set(get() === v ? '' : v); paint(); rerender(); };
+    });
+    paint();
+  }
+
   /* ---------- হোম পেজ ---------- */
   function home() {
-    var root = '', S = S_(g.__SITE), P = [], q = '';
+    var root = '', S = S_(g.__SITE), P = [], q = '', stk = '';
     captureLogin();
     mountHeader(S, root);
     var app = document.getElementById('app');
-    app.innerHTML = '<div class="search"><input id="q" type="search" placeholder="পণ্য খুঁজুন… (যেমন: Redmi A5)" autocomplete="off"></div><div class="chips" id="chips"></div><div id="nt"></div><div id="list"></div><div class="foot" id="foot"></div>';
+    app.innerHTML = '<div class="search"><input id="q" type="search" placeholder="পণ্য খুঁজুন… (যেমন: Redmi A5)" autocomplete="off"></div>' + stkBar() + '<div class="chips" id="chips"></div><div id="nt"></div><div id="list"></div><div class="foot" id="foot"></div>';
     function renderList() {
       var toks = tokens(q), el = document.getElementById('list'), h = '';
       if (!P.length) { el.innerHTML = '<div class="empty">এখনো কোনো পণ্য যোগ করা হয়নি</div>'; return; }
+      var PP = P.filter(function (p) { return stkOk(stk, p); });
+      if (!PP.length) { el.innerHTML = '<div class="empty">এই ধরনের কোনো পণ্য নেই</div>'; return; }
       if (toks.length) {
-        var list = sorted(P.filter(function (p) { return matches(p, toks); }));
+        var list = sorted(PP.filter(function (p) { return matches(p, toks); }));
         if (!list.length) { el.innerHTML = '<div class="empty">কোনো পণ্য পাওয়া যায়নি</div>'; return; }
         h = '<div class="sec"><div class="sh"><h2>খোঁজার ফল</h2></div><div class="grid">' + list.map(function (p) { return cardHTML(p, root); }).join('') + '</div></div>';
       } else {
-        catsOf(S, P).forEach(function (c) {
-          var items = sorted(P.filter(function (p) { return p.category === c; }));
+        catsOf(S, PP).forEach(function (c) {
+          var items = sorted(PP.filter(function (p) { return p.category === c; }));
           h += '<div class="sec"><div class="sh"><h2>' + esc(c) + '</h2><a class="more" href="' + esc(catHref(root, c)) + '">সব দেখুন ›</a></div><div class="hrow">' + items.map(function (p) { return cardHTML(p, root); }).join('') + '</div></div>';
         });
-        var other = sorted(P.filter(function (p) { return !p.category; }));
+        var other = sorted(PP.filter(function (p) { return !p.category; }));
         if (other.length) h += '<div class="sec"><div class="sh"><h2>অন্যান্য</h2></div><div class="hrow">' + other.map(function (p) { return cardHTML(p, root); }).join('') + '</div></div>';
       }
       el.innerHTML = h;
     }
     document.getElementById('q').oninput = function () { q = this.value; renderList(); };
+    bindStk(function () { return stk; }, function (v) { stk = v; }, renderList);
     function all() {
       mountHeader(S, root);
       document.getElementById('chips').innerHTML = chipsHTML(S, P, '', root);
@@ -154,21 +185,22 @@
 
   /* ---------- ক্যাটাগরির আলাদা পেজ ---------- */
   function category() {
-    var root = '', S = S_(g.__SITE), P = [], c = '';
+    var root = '', S = S_(g.__SITE), P = [], c = '', stk = '';
     try { c = new URL(location.href).searchParams.get('c') || ''; } catch (e) { }
     captureLogin();
     var app = document.getElementById('app');
-    app.innerHTML = '<div class="chips" id="chips"></div><h1 id="ct"></h1><div id="list"></div><div class="foot" id="foot"></div>';
+    app.innerHTML = stkBar() + '<div class="chips" id="chips"></div><h1 id="ct"></h1><div id="list"></div><div class="foot" id="foot"></div>';
     function all() {
       mountHeader(S, root);
       document.title = c + ' এর দাম ও ছবি | ' + S.name;
       document.getElementById('chips').innerHTML = chipsHTML(S, P, c, root);
       document.getElementById('ct').textContent = c;
-      var list = sorted(P.filter(function (p) { return p.category === c; }));
-      document.getElementById('list').innerHTML = list.length ? '<div class="grid">' + list.map(function (p) { return cardHTML(p, root); }).join('') + '</div>' : '<div class="empty">এই ক্যাটাগরিতে এখনো কোনো পণ্য নেই</div>';
+      var list = sorted(P.filter(function (p) { return p.category === c && stkOk(stk, p); }));
+      document.getElementById('list').innerHTML = list.length ? '<div class="grid">' + list.map(function (p) { return cardHTML(p, root); }).join('') + '</div>' : '<div class="empty">' + (stk ? 'এই ধরনের কোনো পণ্য নেই' : 'এই ক্যাটাগরিতে এখনো কোনো পণ্য নেই') + '</div>';
       document.getElementById('foot').innerHTML = footHTML(S);
     }
     all();
+    bindStk(function () { return stk; }, function (v) { stk = v; }, all);
     Promise.all([loadJSON('site.json', {}), loadJSON('products.json', [])]).then(function (a) {
       S = S_(a[0]); P = Array.isArray(a[1]) ? a[1] : []; all();
     });
@@ -178,7 +210,7 @@
   function links(p, S, sel) {
     var v = (sel.vi >= 0 && p.variants) ? p.variants[sel.vi] : null;
     var url = S.base.replace(/\/$/, '') + '/p/' + p.slug + '.html';
-    var msg = 'আসসালামু আলাইকুম, আমি "' + p.name + '"' + (v ? ' (' + v.label + ')' : '') + (sel.color ? ' (' + sel.color + ' কালার)' : '') + ' সম্পর্কে জানতে চাই। পণ্য কোড: ' + (p.code || '') + '\n' + url;
+    var msg = 'আসসালামু আলাইকুম, আমি "' + p.name + '"' + (v ? ' (' + v.label + ')' : '') + (sel.color ? ' (' + sel.color + ' কালার)' : '') + ' সম্পর্কে জানতে চাই। দাম: ' + fmt(pinfo(p, v).cur) + '। পণ্য কোড: ' + (p.code || '') + '\n' + url;
     return {
       wa: 'https://wa.me/' + S.whatsapp + '?text=' + encodeURIComponent(msg),
       sms: 'sms:' + S.phone + '?body=' + encodeURIComponent(msg),
@@ -197,8 +229,14 @@
       [].forEach.call(document.querySelectorAll('[data-var]'), function (b) { b.classList.toggle('on', +b.getAttribute('data-var') === sel.vi); });
     }
     function upd() {
-      var pr = document.getElementById('price');
-      if (pr && sel.vi >= 0) pr.textContent = fmt(p.variants[sel.vi].price);
+      if (sel.vi >= (p.variants || []).length) sel.vi = (p.variants && p.variants.length) ? 0 : -1;
+      var inf = pinfo(p, sel.vi >= 0 ? p.variants[sel.vi] : null);
+      var pr = document.getElementById('price'); if (pr) pr.textContent = fmt(inf.cur);
+      var rg = document.getElementById('rgp'); if (rg) rg.innerHTML = rgHTML(inf, p);
+      [].forEach.call(document.querySelectorAll('[data-var]'), function (b) {
+        var v = (p.variants || [])[+b.getAttribute('data-var')], sm = b.querySelector('small');
+        if (v && sm) sm.innerHTML = varSmall(pinfo(p, v));
+      });
       var l = links(p, S, sel);
       var a = document.getElementById('wa'), b = document.getElementById('sms'), c = document.getElementById('call');
       if (a) a.href = l.wa; if (b) b.href = l.sms; if (c) { c.href = l.tel; c.textContent = 'কল করুন: ' + S.phone; }
@@ -218,6 +256,7 @@
       var all = Array.isArray(a[1]) ? a[1] : [];
       var me = all.filter(function (x) { return x.id === p.id; })[0];
       if (me) {
+        p.price = me.price; p.offer = me.offer; p.offerEnd = me.offerEnd; if (me.variants) p.variants = me.variants; upd();
         var st = document.getElementById('stock');
         if (st) { var ok = me.inStock !== false; st.className = 'stk ' + (ok ? 'ok' : 'no'); st.textContent = ok ? 'স্টকে আছে' : 'স্টক আউট'; }
         var sd = document.getElementById('sold'); if (sd) sd.textContent = me.sold > 0 ? me.sold + ' টি বিক্রি হয়েছে' : '';
@@ -233,7 +272,7 @@
     var S = S_(S0), base = S.base.replace(/\/$/, ''), url = base + '/p/' + p.slug + '.html';
     var imgs = (p.images && p.images.length) ? p.images : [S.logo];
     var vs = p.variants || [], mp = minPrice(p), inst = p.inStock !== false;
-    var first = vs.length ? +vs[0].price : +p.price;
+    var inf0 = pinfo(p, vs.length ? vs[0] : null), first = inf0.cur;
     var av = inst ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
     var plain = (p.desc || '').replace(/\s+/g, ' ').trim();
     var title = p.name + ' Price in Bangladesh | ' + S.name;
@@ -241,8 +280,9 @@
     var abs = function (x) { return /^https?:/.test(x) ? x : base + '/' + x; };
     var offer = vs.length > 1 ? {
       '@type': 'AggregateOffer', priceCurrency: 'BDT', lowPrice: mp,
-      highPrice: Math.max.apply(null, vs.map(function (v) { return +v.price; })), offerCount: vs.length, availability: av
+      highPrice: Math.max.apply(null, vs.map(function (v) { return pinfo(p, v).cur; })), offerCount: vs.length, availability: av
     } : { '@type': 'Offer', url: url, priceCurrency: 'BDT', price: mp, availability: av };
+    if (p.offerEnd && minInfo(p).live) offer.priceValidUntil = p.offerEnd;
     var ld = { '@context': 'https://schema.org', '@type': 'Product', name: p.name, image: imgs.map(abs), description: plain || desc, sku: p.code, category: p.category, offers: offer };
     if (p.brand) ld.brand = { '@type': 'Brand', name: p.brand };
     var kw = [p.name, p.name + ' price in Bangladesh', p.name + ' price in BD', p.name + ' দাম', p.name + ' এর দাম বাংলাদেশে', (p.brand || '') + ' ' + (p.category || ''), p.keywords || ''].join(', ');
@@ -259,9 +299,9 @@
     h.push('<div class="gal" id="gal">' + imgs.map(function (x) { return '<img src="' + esc(asset('../', x)) + '" alt="' + esc(p.name) + '">'; }).join('') + '</div>');
     if (imgs.length > 1) h.push('<div class="thumbs">' + imgs.map(function (x, i) { return '<img data-th="' + i + '" src="' + esc(asset('../', x)) + '" alt="">'; }).join('') + '</div>');
     h.push('<h1>' + esc(p.name) + '</h1><div class="meta">' + (p.brand ? 'ব্র্যান্ড: ' + esc(p.brand) + ' · ' : '') + 'কোড: ' + esc(p.code || '') + '</div>');
-    h.push('<div class="price" id="price">' + fmt(first) + '</div><div class="stk ' + (inst ? 'ok' : 'no') + '" id="stock">' + (inst ? 'স্টকে আছে' : 'স্টক আউট') + '</div><div class="sold" id="sold">' + (p.sold > 0 ? p.sold + ' টি বিক্রি হয়েছে' : '') + '</div>');
+    h.push('<div class="price" id="price">' + fmt(first) + '</div><div class="rgp" id="rgp">' + rgHTML(inf0, p) + '</div><div class="stk ' + (inst ? 'ok' : 'no') + '" id="stock">' + (inst ? 'স্টকে আছে' : 'স্টক আউট') + '</div><div class="sold" id="sold">' + (p.sold > 0 ? p.sold + ' টি বিক্রি হয়েছে' : '') + '</div>');
     if (p.colors && p.colors.length) h.push('<div class="lbl">কালার</div><div class="opts">' + p.colors.map(function (c) { return '<button class="opt" data-color="' + esc(c) + '">' + esc(c) + '</button>'; }).join('') + '</div>');
-    if (vs.length) h.push('<div class="lbl">ভেরিয়েন্ট</div><div class="opts">' + vs.map(function (v, i) { return '<button class="opt" data-var="' + i + '">' + esc(v.label) + '<small>' + fmt(v.price) + '</small></button>'; }).join('') + '</div>');
+    if (vs.length) h.push('<div class="lbl">ভেরিয়েন্ট</div><div class="opts">' + vs.map(function (v, i) { return '<button class="opt" data-var="' + i + '">' + esc(v.label) + '<small>' + varSmall(pinfo(p, v)) + '</small></button>'; }).join('') + '</div>');
     if (plain) h.push('<h2>বিবরণ</h2><p>' + nl2br(p.desc) + '</p>');
     if (p.specs && p.specs.length) h.push('<h2>স্পেসিফিকেশন</h2><table class="spec">' + p.specs.map(function (r) { return r[0] ? '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>' : '<tr><td colspan="2">' + esc(r[1]) + '</td></tr>'; }).join('') + '</table>');
     h.push('<div class="cta"><a class="wa" id="wa" href="' + esc(l.wa) + '">WhatsApp করুন</a><a class="sms" id="sms" href="' + esc(l.sms) + '">মেসেজ করুন</a><a class="call" id="call" href="' + esc(l.tel) + '">কল করুন: ' + esc(S.phone) + '</a></div>');
@@ -279,7 +319,7 @@
       urls.map(function (u) { return '<url><loc>' + esc(u) + '</loc><lastmod>' + d + '</lastmod></url>'; }).join('\n') + '\n</urlset>\n';
   }
 
-  var Shop = { home: home, category: category, product: product, pageHTML: pageHTML, sitemap: sitemap, site: S_, slugify: slugify, fmt: fmt, minPrice: minPrice, esc: esc };
+  var Shop = { home: home, category: category, product: product, pageHTML: pageHTML, sitemap: sitemap, site: S_, slugify: slugify, fmt: fmt, minPrice: minPrice, minInfo: minInfo, pinfo: pinfo, esc: esc };
   g.Shop = Shop;
   if (typeof module !== 'undefined' && module.exports) module.exports = Shop;
 })(typeof window !== 'undefined' ? window : globalThis);
