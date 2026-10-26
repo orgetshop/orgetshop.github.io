@@ -149,5 +149,27 @@
   "keywords": "",
   "added": 1792978450697,
   "soldAt": 0
+ },
+ {
+  "id": "p1792978901692",
+  "code": "P0008",
+  "slug": "nexg-n77",
+  "name": "NEXG N77",
+  "brand": "Walton",
+  "category": "মোবাইল",
+  "price": 18999,
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/nexg-n77-1792978892893-0.jpg",
+   "img/nexg-n77-1792978897438-1.jpg"
+  ],
+  "inStock": true,
+  "sold": 0,
+  "keywords": "",
+  "added": 1792978901694,
+  "soldAt": 0
  }
 ]
