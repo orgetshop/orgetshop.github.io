@@ -100,5 +100,26 @@
   "keywords": "",
   "added": 1792973181902,
   "soldAt": 0
+ },
+ {
+  "id": "p1792973246488",
+  "code": "P0006",
+  "slug": "mini-sound-box-x521",
+  "name": "Mini sound box x521",
+  "brand": "",
+  "category": "গেজেট",
+  "price": 700,
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/mini-sound-box-x521-1792973243011-0.jpg"
+  ],
+  "inStock": true,
+  "sold": 10,
+  "keywords": "",
+  "added": 1792973246489,
+  "soldAt": 0
  }
 ]
