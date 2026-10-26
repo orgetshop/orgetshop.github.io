@@ -124,5 +124,30 @@
   "keywords": "",
   "added": 1792973246489,
   "soldAt": 0
+ },
+ {
+  "id": "p1792978450696",
+  "code": "P0007",
+  "slug": "villaon-v50s",
+  "name": "Villaon V50s",
+  "brand": "Villaon",
+  "category": "মোবাইল",
+  "price": 12990,
+  "desc": "",
+  "specs": [],
+  "colors": [
+   "সাদা",
+   "কালো"
+  ],
+  "variants": [],
+  "images": [
+   "img/villaon-v50s-1792978443702-0.jpg",
+   "img/villaon-v50s-1792978447629-1.jpg"
+  ],
+  "inStock": true,
+  "sold": 0,
+  "keywords": "",
+  "added": 1792978450697,
+  "soldAt": 0
  }
 ]
