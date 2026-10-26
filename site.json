@@ -15,8 +15,22 @@
   "ইলেকট্রনিকস",
   "গ্যাস স্টোভ সেট"
  ],
- "notice": {
-  "text": "",
-  "image": "img/notice-1792956653222.jpg"
- }
+ "notices": [
+  {
+   "text": "",
+   "image": "img/notice-1792956653222.jpg"
+  },
+  {
+   "text": "",
+   "image": "img/notice-1792973307454-1.jpg"
+  },
+  {
+   "text": "",
+   "image": "img/notice-1792973311389-2.jpg"
+  },
+  {
+   "text": "",
+   "image": "img/notice-1792973314833-3.jpg"
+  }
+ ]
 }
