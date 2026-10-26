@@ -269,6 +269,8 @@
   "brand": "MARCEL",
   "category": "ফ্রিজ",
   "price": 42690,
+  "offer": 42000,
+  "offerEnd": "",
   "desc": "",
   "specs": [
    [
