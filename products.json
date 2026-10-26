@@ -195,5 +195,28 @@
   "keywords": "",
   "added": 1792979710873,
   "soldAt": 0
+ },
+ {
+  "id": "p1792983518601",
+  "code": "P0010",
+  "slug": "mini-bluetooth-sound-box-x-922",
+  "name": "Mini Bluetooth sound box  x-922",
+  "brand": "",
+  "category": "গেজেট",
+  "price": 950,
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/mini-bluetooth-sound-box-x-922-1792983507124-0.jpg",
+   "img/mini-bluetooth-sound-box-x-922-1792983511083-1.jpg",
+   "img/mini-bluetooth-sound-box-x-922-1792983514673-2.jpg"
+  ],
+  "inStock": true,
+  "sold": 0,
+  "keywords": "",
+  "added": 1792983518602,
+  "soldAt": 0
  }
 ]
