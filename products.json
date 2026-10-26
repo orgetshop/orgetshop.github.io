@@ -239,5 +239,26 @@
   "keywords": "",
   "added": 1792983734039,
   "soldAt": 0
+ },
+ {
+  "id": "p1792988103780",
+  "code": "P0012",
+  "slug": "mini-usb-fan-mobile-fan",
+  "name": "Mini USB Fan Mobile Fan",
+  "brand": "",
+  "category": "গেজেট",
+  "price": 100,
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/mini-usb-fan-mobile-fan-1792988100390-0.jpg"
+  ],
+  "inStock": true,
+  "sold": 0,
+  "keywords": "",
+  "added": 1792988103781,
+  "soldAt": 0
  }
 ]
