@@ -941,5 +941,28 @@
   "keywords": "",
   "added": 1792995824305,
   "soldAt": 0
+ },
+ {
+  "id": "p1792996832336",
+  "code": "P0017",
+  "slug": "partex-almira",
+  "name": "Partex Almira",
+  "brand": "",
+  "category": "পারটেক্স ফার্নিচার",
+  "price": 14990,
+  "offer": 13990,
+  "offerEnd": "",
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/partex-almira-1792996828631-0.jpg"
+  ],
+  "inStock": true,
+  "sold": 0,
+  "keywords": "",
+  "added": 1792996832337,
+  "soldAt": 0
  }
 ]
