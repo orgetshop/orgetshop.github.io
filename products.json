@@ -512,5 +512,26 @@
   "keywords": "Fridge, Refrigerator,",
   "added": 1792990624695,
   "soldAt": 0
+ },
+ {
+  "id": "p1792990895665",
+  "code": "P0014",
+  "slug": "marcel-mfa-b4d-220l",
+  "name": "MARCEL MFA-B4D 220L",
+  "brand": "MARCEL",
+  "category": "ফ্রিজ",
+  "price": 41790,
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/marcel-mfa-b4d-220l-1792990891862-0.jpg"
+  ],
+  "inStock": true,
+  "sold": 0,
+  "keywords": "",
+  "added": 1792990895666,
+  "soldAt": 0
  }
 ]
