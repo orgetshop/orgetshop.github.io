@@ -542,7 +542,7 @@
   "brand": "MARCEL",
   "category": "ফ্রিজ",
   "price": 31690,
-  "offer": 3000,
+  "offer": 29500,
   "offerEnd": "2026-10-15",
   "desc": "",
   "specs": [
@@ -910,7 +910,8 @@
   "colors": [],
   "variants": [],
   "images": [
-   "img/marcel-mfd-a4d-gdsh-xx-144l-1792991186051-0.jpg"
+   "img/marcel-mfd-a4d-gdsh-xx-144l-1792991186051-0.jpg",
+   "img/marcel-mfd-a4d-gdsh-xx-144l-1792996903717-1.jpg"
   ],
   "inStock": true,
   "sold": 0,
