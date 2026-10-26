@@ -260,5 +260,257 @@
   "keywords": "",
   "added": 1792988103781,
   "soldAt": 0
+ },
+ {
+  "id": "p1792990624693",
+  "code": "P0013",
+  "slug": "marcel-mfb-b2f-252l",
+  "name": "MARCEL MFB-B2F 252L",
+  "brand": "MARCEL",
+  "category": "ফ্রিজ",
+  "price": 42690,
+  "desc": "",
+  "specs": [
+   [
+    "Cooling Features",
+    ""
+   ],
+   [
+    "",
+    "Type\tDirect Cool"
+   ],
+   [
+    "Capacity",
+    ""
+   ],
+   [
+    "",
+    "Gross Volume\t252 Ltr."
+   ],
+   [
+    "",
+    "Net Volume\t238 Ltr."
+   ],
+   [
+    "",
+    "Net Weight\t59 ± 2 Kg"
+   ],
+   [
+    "",
+    "Gross Weight\t66 ± 2 Kg"
+   ],
+   [
+    "Performance",
+    ""
+   ],
+   [
+    "",
+    "Climatic Type (SN, N, ST, T)\tN~ST"
+   ],
+   [
+    "",
+    "Rated Voltage/ Hz\t220 ~ 240/ 50"
+   ],
+   [
+    "",
+    "Compressor Input Power (Watt)\tV 06.01-124"
+   ],
+   [
+    "",
+    "V 07.01-109"
+   ],
+   [
+    "",
+    "V 07.02-109"
+   ],
+   [
+    "",
+    "V 07.03-109"
+   ],
+   [
+    "",
+    "V 08.01-127"
+   ],
+   [
+    "",
+    "Compressor Type\tRSCR"
+   ],
+   [
+    "",
+    "Energy Rating\tN/A"
+   ],
+   [
+    "",
+    "Cooling Effect\tFreezer Cabinet Less than -18℃"
+   ],
+   [
+    "",
+    "Refrigerator Cabinet 0℃ to +5℃"
+   ],
+   [
+    "General Features",
+    ""
+   ],
+   [
+    "",
+    "Temperature Control (Electronic/ Mechanical)\tMechanical"
+   ],
+   [
+    "Defrosting (Automatic/ Manual)",
+    "Manual"
+   ],
+   [
+    "",
+    "Handle (Recessed/ Grip)\tRecessed/Grip"
+   ],
+   [
+    "",
+    "Lock\tYes"
+   ],
+   [
+    "",
+    "Refrigerant\tR600a"
+   ],
+   [
+    "",
+    "Thermostat\tRoHS Certified"
+   ],
+   [
+    "",
+    "Capillary\tCopper"
+   ],
+   [
+    "",
+    "Polyurethane foam blowing agent\tCyclopentene [Eco-friendly (100% CFC &"
+   ],
+   [
+    "",
+    "HCFC Free) Green Technology]"
+   ],
+   [
+    "",
+    "Recommended voltage stabilizer capacity\tV 06.01-Low Voltage(130~260V)"
+   ],
+   [
+    "",
+    "For V 06.01- Wide Voltage Range (130Vac - 260Vac). Voltage stabilizer is not required."
+   ],
+   [
+    "",
+    "In case of voltages beyond this range, 1000VA is recommended. V 07.01,V 07.02,V 07.03-Low Voltage(140~260V)"
+   ],
+   [
+    "",
+    "For V07.01, V 07.02,V 07.03 - Wide Voltage Range (140Vac - 260Vac)."
+   ],
+   [
+    "",
+    "Voltage stabilizer is not required. In case of voltages beyond this range, 1000VA is recommended"
+   ],
+   [
+    "",
+    "V 08.01-Low Voltage(150~260V)"
+   ],
+   [
+    "",
+    "For V 08.01 - Wide Voltage Range (150Vac - 260Vac)."
+   ],
+   [
+    "",
+    "Voltage stabilizer is not required."
+   ],
+   [
+    "",
+    "In case of voltages beyond this range, 1000VA is recommended."
+   ],
+   [
+    "Refrigerator Compartment",
+    ""
+   ],
+   [
+    "",
+    "Shelf (Material/No.)\tWire/2"
+   ],
+   [
+    "",
+    "Door Basket\tGPPS/4"
+   ],
+   [
+    "",
+    "Interior Lamp\tYes"
+   ],
+   [
+    "",
+    "Vegetable Crisper\tYes"
+   ],
+   [
+    "",
+    "Vegetable Crisper Cover\tYes"
+   ],
+   [
+    "",
+    "Egg Tray\tYes"
+   ],
+   [
+    "Freezer Compartment",
+    ""
+   ],
+   [
+    "",
+    "Shelf (Material/ No.)\tWire/3"
+   ],
+   [
+    "",
+    "Drawer\tHIPS/5"
+   ],
+   [
+    "Net Dimensions",
+    ""
+   ],
+   [
+    "",
+    "Width/mm\t555 mm"
+   ],
+   [
+    "",
+    "Depth/mm\t630 mm"
+   ],
+   [
+    "",
+    "Height/mm\t1720 mm"
+   ],
+   [
+    "Packaging Dimensions",
+    ""
+   ],
+   [
+    "",
+    "Width/mm\t580 mm"
+   ],
+   [
+    "",
+    "Depth/mm\t645 mm"
+   ],
+   [
+    "",
+    "Height/mm\t1765 mm"
+   ],
+   [
+    "",
+    "Loading Capacity- 40HQ/ 40Ft/ 20Ft\t98/ 72/ 3"
+   ]
+  ],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/marcel-mfb-b2f-252l-1792990614025-0.jpg",
+   "img/marcel-mfb-b2f-252l-1792990617819-1.jpg",
+   "img/marcel-mfb-b2f-252l-1792990621379-2.jpg"
+  ],
+  "inStock": true,
+  "sold": 0,
+  "keywords": "Fridge, Refrigerator,",
+  "added": 1792990624695,
+  "soldAt": 0
  }
 ]
