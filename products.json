@@ -218,5 +218,26 @@
   "keywords": "",
   "added": 1792983518602,
   "soldAt": 0
+ },
+ {
+  "id": "p1792983734039",
+  "code": "P0011",
+  "slug": "hamko-mini-wardrobe",
+  "name": "Hamko mini wardrobe",
+  "brand": "Hamko",
+  "category": "প্ল্যাস্টিক পন্য",
+  "price": 4950,
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/hamko-mini-wardrobe-1792983730600-0.jpg"
+  ],
+  "inStock": true,
+  "sold": 0,
+  "keywords": "",
+  "added": 1792983734039,
+  "soldAt": 0
  }
 ]
