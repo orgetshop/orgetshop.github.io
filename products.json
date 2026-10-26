@@ -171,5 +171,29 @@
   "keywords": "",
   "added": 1792978901694,
   "soldAt": 0
+ },
+ {
+  "id": "p1792979710871",
+  "code": "P0009",
+  "slug": "p-p0009",
+  "name": "আলমিরা ভালো বোর্ডের।",
+  "brand": "Orget",
+  "category": "গেজেট",
+  "price": 17500,
+  "desc": "",
+  "specs": [],
+  "colors": [],
+  "variants": [],
+  "images": [
+   "img/p-1792979692819-0.jpg",
+   "img/p-1792979698114-1.jpg",
+   "img/p-1792979703148-2.jpg",
+   "img/p-1792979707355-3.jpg"
+  ],
+  "inStock": true,
+  "sold": 0,
+  "keywords": "",
+  "added": 1792979710873,
+  "soldAt": 0
  }
 ]
