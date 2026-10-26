@@ -11,8 +11,11 @@
   "specs": [],
   "colors": [],
   "variants": [],
-  "images": [],
+  "images": [
+   "img/redmi-a5-1792978077761-0.jpg"
+  ],
   "inStock": true,
+  "sold": 0,
   "keywords": "",
   "added": 1792955956137,
   "soldAt": 0
