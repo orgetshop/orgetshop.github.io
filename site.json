@@ -19,14 +19,10 @@
   "ফার্নিচার",
   "ফ্রিজ"
  ],
- "notice": {
-  "text": "",
-  "image": ""
- },
  "notices": [
   {
    "text": "",
-   "image": "img/notice-1792956653222.jpg"
+   "image": "img/notice-1795049567339-0.jpg"
   },
   {
    "text": "",
@@ -39,6 +35,10 @@
   {
    "text": "",
    "image": "img/notice-1792973314833-3.jpg"
+  },
+  {
+   "text": "",
+   "image": "img/notice-1795049571145-4.jpg"
   }
  ]
 }
